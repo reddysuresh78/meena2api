@@ -26,8 +26,8 @@ public class NPLTester {
 				"        \"longitude\": 78.4203776,\r\n" + 
 				"        \"latitude\": 17.416192,\r\n" + 
 				"        \"address\": \"Jubilee Hills,Hyderabad\",\r\n" + 
-				"        \"date\": \"2-23-2020\",\r\n" + 
-				"        \"time\": \"19:13\"\r\n" + 
+				"        \"date\": \"2020-02-24\",\r\n" + 
+				"        \"time\": \"21:13\"\r\n" + 
 				"    },\r\n" + 
 				"    \"timeout\": 5000\r\n" + 
 				"}");
@@ -69,8 +69,8 @@ public class NPLTester {
 		double longitude = 78.48; // + 29/60.0; //78.48;
 		double latitude = 17.37; // + 23/60.0; //17.37;
   
-		nd.setDateOfBirth(15 + "-" + 2 + "-" + 2020);
-		nd.setTimeOfBirth(18 + ":53");
+		nd.setDateOfBirth(23 + "-" + 2 + "-" + 2020);
+		nd.setTimeOfBirth(19 + ":40");
 		nd.setLatitude(latitude);
 		nd.setLongitude(longitude);
 		nd.setPlaceOfBirth("Hyderabad");
@@ -97,7 +97,7 @@ public class NPLTester {
 		    String outputDate= "";
 		    
 		    try {
-				Date inputDate=new SimpleDateFormat("MM-dd-yyyy").parse(date);
+				Date inputDate=new SimpleDateFormat("yyyy-MM-dd").parse(date.substring(0, 10));
 				outputDate=new SimpleDateFormat("dd-MM-yyyy").format(inputDate);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block

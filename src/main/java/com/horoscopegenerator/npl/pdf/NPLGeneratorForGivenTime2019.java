@@ -228,7 +228,7 @@ public class NPLGeneratorForGivenTime2019 {
 
         //Determine sun rise time
         sw.swe_rise_trans( sd.getJulDay(), 0, null, 4 , 1 + sunriseFlags, new double[]{ longitude, latitude, 0}, 0, 0, returnedTime, serr);
-        long timeZoneOffset = TimeZone.getDefault().getRawOffset();
+        long timeZoneOffset = -nativeDetails.getOffset(); // TimeZone.getDefault().getRawOffset();
         double offsetHrs = timeZoneOffset / (1000 * 60 * 60.0d);
         birthChart.setSunriseTime(toDate(returnedTime.val, offsetHrs));
 
@@ -461,8 +461,12 @@ public class NPLGeneratorForGivenTime2019 {
         sw.swe_rise_trans( sd.getJulDay(), 0, null, 4 , 1 + sunriseFlags, new double[]{ longitude, latitude, 0}, 0, 0, returnedTime, serr);
 
 
-        long timeZoneOffset = TimeZone.getDefault().getRawOffset();
+        long timeZoneOffset = -nativeDetails.getOffset(); // TimeZone.getDefault().getRawOffset();
+        System.out.println("timeZoneOffset " +  timeZoneOffset);
+
         double offsetHrs = timeZoneOffset / (1000 * 60 * 60.0d);
+        System.out.println("offsetHrs " +  offsetHrs);
+        
         birthChart.setSunriseTime(toDate(returnedTime.val, offsetHrs));
 
         String sunRiseTime = Utils.getDisplayDate(birthChart.getSunriseTime());
@@ -579,15 +583,20 @@ public class NPLGeneratorForGivenTime2019 {
         Star hrm = null;
         int pada = 0;
         Calendar givenTime = Utils.getTimeFromString24(givenTimeStr);
-        System.out.println("Given time: " +  Utils.getDisplayDateHHMM(givenTime));
+//        System.out.println("Given time: " +  Utils.getDisplayDateHHMM(givenTime));
+        //FIXED HERE.. NULL POINTER FOR 23-02-2020 11:10 PM
         for(NPLInfo nplInfo : sunriseChart.getNplInfo()){
             Calendar startTime = Utils.getTimeFromString(nplInfo.getStartTime());
             Calendar endTime = Utils.getTimeFromString(nplInfo.getEndTime());
-//            System.out.println("Start/End time: " + Utils.getDisplayDateHHMM(startTime) + "/" + Utils.getDisplayDateHHMM(endTime));
+            //This check is required to properly adjust the time for today vs next day
+            if(endTime.before(startTime)) {
+            	endTime.add(Calendar.DATE, 1);
+            }
+//            System.out.println("Start/End/Given time: " + getDateFromCalendar(startTime) + "/" + getDateFromCalendar(endTime) + "/" + getDateFromCalendar(givenTime));
 
             if( (givenTime.equals(startTime)) ||
                     (givenTime.equals(endTime)) ||
-                    (givenTime.after(startTime) && givenTime.before(endTime)) ) {
+                    (givenTime.after(startTime)) && givenTime.before(endTime) ) {  // 
                 hrm = Star.valueOf( nplInfo.getStar().toUpperCase());
 
                 if(givenTime.equals(startTime)){
@@ -663,6 +672,12 @@ public class NPLGeneratorForGivenTime2019 {
         return birthChart;
     }
 
+    private static String getDateFromCalendar(Calendar cal) {
+    	Date date=cal.getTime();
+    	DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+    	String formattedDate=dateFormat.format(date);
+    	return formattedDate;
+    }
 
     private static Calendar toDate(double d, double tzHours) {
         SweDate sd = new SweDate(d + tzHours / 24. + 0.5/24./3600. /* round to second */);
