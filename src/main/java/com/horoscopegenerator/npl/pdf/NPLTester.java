@@ -3,7 +3,9 @@ package com.horoscopegenerator.npl.pdf;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +13,10 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horoscopegenerator.BirthChart;
+import com.horoscopegenerator.House;
 import com.horoscopegenerator.NativeDetails;
+import com.horoscopegenerator.PlanetInfo;
+import com.horoscopegenerator.Raasi;
 
 public class NPLTester {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -26,8 +31,8 @@ public class NPLTester {
 				"        \"longitude\": 78.4203776,\r\n" + 
 				"        \"latitude\": 17.416192,\r\n" + 
 				"        \"address\": \"Jubilee Hills,Hyderabad\",\r\n" + 
-				"        \"date\": \"2020-02-24\",\r\n" + 
-				"        \"time\": \"21:13\"\r\n" + 
+				"        \"date\": \"2020-02-29\",\r\n" + 
+				"        \"time\": \"12:13\"\r\n" + 
 				"    },\r\n" + 
 				"    \"timeout\": 5000\r\n" + 
 				"}");
@@ -58,12 +63,53 @@ public class NPLTester {
 		bc.getRaasiChakra().getPlanetInfo().clear();
 		bc.getRaasiChakra().setLagna(null);
 		bc.setDasaLengthsInMillis(null);
+		
+		SimpleDateFormat format1 = new SimpleDateFormat("HH:mm:ss");
+	 	String formatted = format1.format(bc.getSunriseTime().getTime());
+		System.out.println(formatted);
+		bc.setSunrise(formatted);
+		
+		adjustPlanetOrder(bc.getRaasiChakra().getOrderedHouses());
+		 
+		 
 		String jsonStr = objectMapper.writeValueAsString(bc);
 		System.out.println(jsonStr);
 
 		return bc;
 
 	}
+
+	private static void adjustPlanetOrder(List<House> orderedHouses) {
+ 
+		for(House house: orderedHouses) {
+			ArrayList<PlanetInfo> sortedPlanets = new ArrayList<PlanetInfo>();
+			 
+          for (int i = 0; i < house.getPlanets().size(); i++) {
+        	  int insertAt = sortedPlanets.size();
+        	  PlanetInfo planetInfo = house.getPlanets().get(i);
+
+        	  for (int j = 0; j < sortedPlanets.size(); j++) {
+        		  if(house.getRaasi()== Raasi.DHANUS || house.getRaasi()== Raasi.MAKARAM || 
+        				  house.getRaasi()== Raasi.KUMBHAM || house.getRaasi()== Raasi.MEENAM ) {
+	        		  if (((PlanetInfo) sortedPlanets.get(j)).longitude <= planetInfo.longitude) {
+	        			  insertAt = j;
+	        			  break;
+	        		  }
+        		  }else {
+	        		  if (((PlanetInfo) sortedPlanets.get(j)).longitude >= planetInfo.longitude) {
+	        			  insertAt = j;
+	        			  break;
+	        		  }
+        		  }
+        		  
+        	  }
+        	  sortedPlanets.add(insertAt, planetInfo);
+          }
+          house.setPlanets(sortedPlanets);
+		}
+		
+	}
+
 
 	private static void populateDefaults(NativeDetails nd) {
 		double longitude = 78.48; // + 29/60.0; //78.48;

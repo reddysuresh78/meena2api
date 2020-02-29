@@ -35,6 +35,8 @@ public class BirthChart {
 	private boolean signsInEnglish;
 
 	private Calendar sunriseTime;
+	
+	private String sunrise;
 
 	private Calendar localDateOfBirth;
 
@@ -57,13 +59,35 @@ public class BirthChart {
 	private String[] udPlanets;
 	
 	private String[] vudPlanets;
+	
+	private Set<String> associatedPlanets;
 	 
 	private NPLForGivenTimeDetails nplDetails = new NPLForGivenTimeDetails();
 	
 	private List<Planet> rahuRepresentations = new ArrayList<>();
 	private List<Planet> ketuRepresentations = new ArrayList<>();
 	 
- 
+	 
+	 
+
+	public Set<String> getAssociatedPlanets() {
+		return associatedPlanets;
+	}
+
+	public void setAssociatedPlanets(Set<String> associatedPlanets) {
+		this.associatedPlanets = associatedPlanets;
+	}
+
+	public String getSunrise() {
+		return sunrise;
+	}
+
+	public void setSunrise(String sunrise) {
+		this.sunrise = sunrise;
+	}
+
+	 
+
 	public String[] getUdPlanets() {
 		return udPlanets;
 	}

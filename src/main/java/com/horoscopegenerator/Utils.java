@@ -71,7 +71,7 @@ public class Utils {
         }
         return cal;
     }
-    public static SimpleDateFormat HOUR24_FORMAT = new SimpleDateFormat("hh:mm");
+    public static SimpleDateFormat HOUR24_FORMAT = new SimpleDateFormat("HH:mm");
     public static Calendar getTimeFromString24(String time){
 
         Calendar cal = Calendar.getInstance();

@@ -1,6 +1,19 @@
 
 package com.horoscopegenerator.npl.pdf;
 
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.horoscopegenerator.BirthChart;
 import com.horoscopegenerator.CalculatedRasi;
 import com.horoscopegenerator.Chakra;
@@ -15,19 +28,6 @@ import com.horoscopegenerator.PlanetInfo;
 import com.horoscopegenerator.Raasi;
 import com.horoscopegenerator.Star;
 import com.horoscopegenerator.Utils;
- 
-
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
 
 import swisseph.DblObj;
 import swisseph.SweConst;
@@ -224,10 +224,10 @@ public class NPLGeneratorForGivenTime2019 {
         //Calculate sunrise time as well.
         DblObj returnedTime = new DblObj();
 
-        int sunriseFlags = SweConst.SE_BIT_DISC_CENTER|SweConst.SE_BIT_NO_REFRACTION| 128;
+        int sunriseFlags = SweConst.SE_CALC_RISE; // SweConst.SE_BIT_DISC_CENTER|SweConst.SE_BIT_NO_REFRACTION| 128;
 
         //Determine sun rise time
-        sw.swe_rise_trans( sd.getJulDay(), 0, null, 4 , 1 + sunriseFlags, new double[]{ longitude, latitude, 0}, 0, 0, returnedTime, serr);
+        sw.swe_rise_trans( sd.getJulDay(), 0, null, 4 ,  sunriseFlags, new double[]{ longitude, latitude, 0}, 0, 0, returnedTime, serr);
         long timeZoneOffset = -nativeDetails.getOffset(); // TimeZone.getDefault().getRawOffset();
         double offsetHrs = timeZoneOffset / (1000 * 60 * 60.0d);
         birthChart.setSunriseTime(toDate(returnedTime.val, offsetHrs));
@@ -455,10 +455,10 @@ public class NPLGeneratorForGivenTime2019 {
         DblObj returnedTime = new DblObj();
         //Determine sun rise time
 
-        int sunriseFlags = SweConst.SE_BIT_DISC_CENTER|SweConst.SE_BIT_NO_REFRACTION| 128;
+        int sunriseFlags = SweConst.SE_CALC_RISE; // SweConst.SE_BIT_DISC_CENTER|SweConst.SE_BIT_NO_REFRACTION| 128;
 
         //Determine sun rise time
-        sw.swe_rise_trans( sd.getJulDay(), 0, null, 4 , 1 + sunriseFlags, new double[]{ longitude, latitude, 0}, 0, 0, returnedTime, serr);
+        sw.swe_rise_trans( sd.getJulDay(), 0, null, 4 ,  sunriseFlags, new double[]{ longitude, latitude, 0}, 0, 0, returnedTime, serr);
 
 
         long timeZoneOffset = -nativeDetails.getOffset(); // TimeZone.getDefault().getRawOffset();
@@ -488,8 +488,8 @@ public class NPLGeneratorForGivenTime2019 {
 
 
 
-        System.out.println(Arrays.toString( rasis));
-        System.out.println(Arrays.toString( navamsaRasis ));
+//        System.out.println(Arrays.toString( rasis));
+//        System.out.println(Arrays.toString( navamsaRasis ));
 
         System.out.println("Birth Chart: " + birthChart);
 
@@ -526,7 +526,7 @@ public class NPLGeneratorForGivenTime2019 {
             }
         }
         sunriseChart.getNplInfo().add(new NPLInfo(prevTime  , newTime1  ,Star.valueOf(sunriseChart.getNakshatra()).toString(), starLord.toString(), npl ));
-        System.out.println(prevTime + " - "  + newTime1 +  " - " +  Star.valueOf(sunriseChart.getNakshatra()).toString() + " - " + starLord + " - " + npl); //  + " - " + jeeva  + " - " + sareera ) ;
+//        System.out.println(prevTime + " - "  + newTime1 +  " - " +  Star.valueOf(sunriseChart.getNakshatra()).toString() + " - " + starLord + " - " + npl); //  + " - " + jeeva  + " - " + sareera ) ;
 
         sunriseChart.getSunriseTime().add(Calendar.MINUTE, 1);
         prevTime = Utils.getDisplayDateHHMM(sunriseChart.getSunriseTime());
@@ -549,7 +549,7 @@ public class NPLGeneratorForGivenTime2019 {
                 }
             }
 
-            System.out.println(  prevTime + " - "  + newTime1 + " - " +   Star.values()[i]  +  " - " + starLord + " - " + npl);
+//            System.out.println(  prevTime + " - "  + newTime1 + " - " +   Star.values()[i]  +  " - " + starLord + " - " + npl);
             sunriseChart.getNplInfo().add(new NPLInfo(prevTime  , newTime1  ,Star.values()[i].toString(), starLord.toString(), npl ));
 
             sunriseChart.getSunriseTime().add(Calendar.MINUTE, 1);
@@ -572,7 +572,7 @@ public class NPLGeneratorForGivenTime2019 {
                 }
             }
 
-            System.out.println( prevTime + " - "  + newTime1 + " - " +   Star.values()[i]  +  " - " + starLord + " - " + npl);
+//            System.out.println( prevTime + " - "  + newTime1 + " - " +   Star.values()[i]  +  " - " + starLord + " - " + npl);
             sunriseChart.getNplInfo().add(new NPLInfo(prevTime, newTime1,Star.values()[i].toString(), starLord.toString(), npl ));
 
             sunriseChart.getSunriseTime().add(Calendar.MINUTE, 1);
@@ -582,7 +582,9 @@ public class NPLGeneratorForGivenTime2019 {
         }
         Star hrm = null;
         int pada = 0;
+//        System.out.println("Given time str " + givenTimeStr);
         Calendar givenTime = Utils.getTimeFromString24(givenTimeStr);
+//        System.out.println("Given time: " +  getDateFromCalendar(givenTime)); 
 //        System.out.println("Given time: " +  Utils.getDisplayDateHHMM(givenTime));
         //FIXED HERE.. NULL POINTER FOR 23-02-2020 11:10 PM
         for(NPLInfo nplInfo : sunriseChart.getNplInfo()){
@@ -590,6 +592,7 @@ public class NPLGeneratorForGivenTime2019 {
             Calendar endTime = Utils.getTimeFromString(nplInfo.getEndTime());
             //This check is required to properly adjust the time for today vs next day
             if(endTime.before(startTime)) {
+//            	System.out.println("Adding 1 day for " + nplInfo.getStartTime() + "/" + nplInfo.getEndTime());
             	endTime.add(Calendar.DATE, 1);
             }
 //            System.out.println("Start/End/Given time: " + getDateFromCalendar(startTime) + "/" + getDateFromCalendar(endTime) + "/" + getDateFromCalendar(givenTime));
@@ -614,7 +617,7 @@ public class NPLGeneratorForGivenTime2019 {
             }
         }
 
-        System.out.println("HRM/Lord: " + hrm + "/" + hrm.getStarLord());
+//        System.out.println("HRM/Lord: " + hrm + "/" + hrm.getStarLord());
 
         planetInfo = new PlanetInfo();
         planetInfo.setIndex(-1);
@@ -632,7 +635,9 @@ public class NPLGeneratorForGivenTime2019 {
                 }
              }
         }
-
+        
+       
+         
         mapToModel(rasis, navamsaRasis, birthChart);
 
         calculatePlanetStars(birthChart);
@@ -654,8 +659,16 @@ public class NPLGeneratorForGivenTime2019 {
         birthChart.getNplDetails().setHrm(hrm);
         birthChart.getNplDetails().setHrmLord(hrm.getStarLord());
         birthChart.getNplDetails().setHrmPada(pada);
-
-
+        
+        Raasi hrmRaasi = hrm.getPada1Raasi();
+        if(pada == 2)
+        	hrmRaasi = hrm.getPada2Raasi();
+        else if(pada == 3)
+        	hrmRaasi = hrm.getPada3Raasi();
+        else if(pada == 4)
+        	hrmRaasi = hrm.getPada4Raasi();
+        
+        birthChart.getNplDetails().setHrmSign(hrmRaasi);  
         for(PlanetInfo planetInfo1: birthChart.getRaasiChakra().getPlanetInfo()) {
             if(planetInfo1.getPlanet() == hrm.getStarLord()) {
                 birthChart.getNplDetails().setHrmJeeva( planetInfo1.getJeeva() );
@@ -667,7 +680,78 @@ public class NPLGeneratorForGivenTime2019 {
             }
         }
 
+        //DRM, HRM, NPL, JEEVA AND SAREERA - CONJOINED AND  PLANETS ASPECTING THEIR HOUSE
+        List<PlanetInfo> associatedPlanets = new ArrayList<>();
+        for(House curHouse: birthChart.getRaasiChakra().getHouses()) {
+        	if(curHouse.getRaasi() == hrmRaasi) {
+        		associatedPlanets.addAll( curHouse.getPlanets() );
+        		associatedPlanets.addAll( curHouse.getAspectedPlanets() );
+        	}
+        }
+        
+        Raasi drmRaasi = null;
+        drm = sunriseChart.getNplDetails().getDrm();
+        for(PlanetInfo planetInfo1: birthChart.getRaasiChakra().getPlanetInfo()) {
+            if(planetInfo1.getPlanet() == Planet.MOON){
+            	drmRaasi = planetInfo1.getHouse().getRaasi();
+                break;
+            }
+        }
+        for(House curHouse: birthChart.getRaasiChakra().getHouses()) {
+        	if(curHouse.getRaasi() == drmRaasi) {
+        		associatedPlanets.addAll( curHouse.getPlanets() );
+        		associatedPlanets.addAll( curHouse.getAspectedPlanets() );
+        	}
+        }
+
+        
+        Raasi nplRaasi = birthChart.getNplDetails().getNpl() ;
+        for(House curHouse: birthChart.getRaasiChakra().getHouses()) {
+        	if(curHouse.getRaasi() == nplRaasi) {
+        		associatedPlanets.addAll( curHouse.getPlanets() );
+        		associatedPlanets.addAll( curHouse.getAspectedPlanets() );
+        	}
+        }
+        
+        Raasi jeevaRaasi = null;
+        for(PlanetInfo planetInfo1: birthChart.getRaasiChakra().getPlanetInfo()) {
+            if(planetInfo1.getPlanet() == birthChart.getNplDetails().getHrmJeeva() ) {
+            	jeevaRaasi = planetInfo1.getHouse().getRaasi();
+                break;
+            }
+        }
+        for(House curHouse: birthChart.getRaasiChakra().getHouses()) {
+        	if(curHouse.getRaasi() == jeevaRaasi) {
+        		associatedPlanets.addAll( curHouse.getPlanets() );
+        		associatedPlanets.addAll( curHouse.getAspectedPlanets() );
+        	}
+        }
+        
+        Raasi sareeraRaasi = null;
+        for(PlanetInfo planetInfo1: birthChart.getRaasiChakra().getPlanetInfo()) {
+            if(planetInfo1.getPlanet() == birthChart.getNplDetails().getHrmSareera() ) {
+            	sareeraRaasi = planetInfo1.getHouse().getRaasi();
+                break;
+            }
+        }
+        for(House curHouse: birthChart.getRaasiChakra().getHouses()) {
+        	if(curHouse.getRaasi() == sareeraRaasi) {
+        		associatedPlanets.addAll( curHouse.getPlanets() );
+        		associatedPlanets.addAll( curHouse.getAspectedPlanets() );
+        	}
+        }
+        
+        Set<String> associatedPlanetList = new HashSet<String>(associatedPlanets.size());
+        
+        for(PlanetInfo planetInfo1: associatedPlanets) {
+        	if(planetInfo1.getPlanet() == Planet.LAGNA)
+        		continue;
+        	associatedPlanetList.add(planetInfo1.getPlanet().name());
+        }
+        birthChart.setAssociatedPlanets(associatedPlanetList);
+        
         new NPLPdfCreatorForGivenTime2019().generateLocalPdf(birthChart, nativeDetails.getFilePath(), nativeDetails.getImageData());
+         
 
         return birthChart;
     }
@@ -699,7 +783,7 @@ public class NPLGeneratorForGivenTime2019 {
                     break;
                 }
             }
-            System.out.println("Determining for: " + planet.getShortName() + "/" + currentPlanet.getPlanet().getShortName() );
+//            System.out.println("Determining for: " + planet.getShortName() + "/" + currentPlanet.getPlanet().getShortName() );
 
             Planet[] jsPlanets = getJeevaSareeraPlanets(birthChart, planet, currentPlanet, true);
             String threeFoldGuna = getThreeFoldGuna(birthChart, planet);
@@ -707,7 +791,7 @@ public class NPLGeneratorForGivenTime2019 {
             currentPlanet.setJeeva(jsPlanets[0]);
             currentPlanet.setSareera(jsPlanets[1]);
 
-            System.out.println("Current planet/j/s: " + currentPlanet.getPlanet().getShortName() + "/" + currentPlanet.getJeeva().getShortName() + "/" + currentPlanet.getSareera().getShortName());
+//            System.out.println("Current planet/j/s: " + currentPlanet.getPlanet().getShortName() + "/" + currentPlanet.getJeeva().getShortName() + "/" + currentPlanet.getSareera().getShortName());
 
             Planet kalamsaLord = getKalamsaLord(currentPlanet.getHouse().getRaasi().getRaasiNo(), currentPlanet.longitude);
             currentPlanet.setKalamsaLord(kalamsaLord);
